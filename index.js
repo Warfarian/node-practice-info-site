@@ -1,12 +1,13 @@
-const http = require('http');
+const express = require("express");
+app = express();
 const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 5000;
 
 
-http.createServer((req,res)=>{
-    let filePath =path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+app.get('*',(req,res)=>{
+    let filePath =path.join(__dirname, path.normalize(req.url === '/' ? 'index.html' : req.url));
     let extensionName = path.extname(filePath)
     
     let contentType = 'text/html';
@@ -34,7 +35,7 @@ http.createServer((req,res)=>{
             if (err.code === 'ENOENT'){
                 fs.readFile(path.join(__dirname,'404.html'), (err, content)=> {
                     if (err) throw err;
-                    res.writeHead(200,{'Content-Type':'text/html'})
+                    res.writeHead(404,{'Content-Type':'text/html'})
                     res.end(content, 'utf8');
                 })
             }else{
@@ -48,6 +49,7 @@ http.createServer((req,res)=>{
         }
     })
 
-}).listen(PORT);
+});
 
+app.listen(PORT)
     
